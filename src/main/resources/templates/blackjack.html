@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Blackjack</title>
+    <style>
+        /* Estilo general */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #2e8b57; /* Fondo verde simulando una mesa */
+            color: #fff;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        /* Contenedor general */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        /*Contenedor Cartas*/
+        .cardcontainer {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        /* Estilo de las cartas */
+        .card {
+            width: 140px;
+            height: 210px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #fff;
+            color: #000;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            object-fit: cover;
+        }
+
+        /* Carta oculta */
+        .hidden {
+            box-sizing: border-box;
+            background-color: transparent; /* Elimina el color de fondo */
+		    border: 2px solid #333; /* Mantén el borde */
+		    background-image: url('/images/cartas/atras.png');
+		    background-size: cover; /* Ajusta la imagen al tamaño del contenedor */
+		    background-position: center;
+		    color: transparent; /* Hace el texto invisible */
+        }
+
+        /* Botones */
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Juego de Blackjack</h1>
+
+        <!-- Cartas del dealer -->
+        <h2>Dealer:</h2>
+        <div class="cardcontainer">
+		    <img th:src="${dealerCarta1.rutaImagen}" class="card" alt="Carta Dealer 1" />
+		    <img th:src="${dealerCarta2.rutaImagen}" class="card hidden" alt="Carta Dealer 2" />
+		</div>
+        
+                <!-- Cartas del jugador -->
+        <h2>Tus cartas:</h2>
+       	<div class="cardcontainer">
+    		<div th:each="carta : ${cartasJugador}">
+        		<img th:src="${carta.rutaImagen}" class="card" alt="Carta Jugador" />
+    		</div>
+		</div>
+        
+
+        <!-- Botón para reiniciar -->
+        <button th:onclick="'location.href=\'/BJ/iniciar\''">Reiniciar</button>
+    </div>
+</body>
+</html>
+
