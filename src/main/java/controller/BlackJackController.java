@@ -34,6 +34,6 @@ public class BlackJackController {
         model.addAttribute("dealerCarta1", dealerCarta1);
         model.addAttribute("dealerCarta2", dealerCarta2);
 
-        return "blackjack"; // Renderiza el archivo blackjack.html
+        return "blackjack.html"; // Renderiza el archivo blackjack.html
     }
 }

@@ -97,3 +97,4 @@ org.eclipse.core.runtime.CoreException: Launch configuration Principal reference
 2024-11-20 14:09:27,770 [Worker-34: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\sergi\Downloads\src\main\resources
 2024-11-20 14:09:27,776 [Worker-34: Building] WARN  o.a.m.s.f.DefaultMavenResourcesFiltering - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
 2024-11-20 14:09:27,778 [Worker-34: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\sergi\Downloads\src\test\resources
+2024-11-21 18:37:53,593 [Worker-7: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
