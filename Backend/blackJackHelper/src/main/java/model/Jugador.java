@@ -8,10 +8,10 @@ public class Jugador {
 	private List<Carta> cartas;
 	private int dinero;
 	
-	public Jugador(int dinero) {
+	public Jugador() {
 		super();
         this.cartas = new ArrayList<>();
-		this.dinero = dinero;
+		this.dinero = 5000;
 	}
 	
 	public List<Carta> getCartas() {

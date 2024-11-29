@@ -1,11 +1,10 @@
 package controller;
 
+import model.Juego;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import model.Juego;
 
 @RestController
 @RequestMapping("/blackjack")
@@ -17,27 +16,62 @@ public class BlackjackController {
         this.blackjackService = blackjackService;
     }
 
-    // Endpoint para obtener el estado actual del juego
     @GetMapping("/estado")
     public Juego getEstadoJuego() {
-        return new Juego(blackjackService.getCartasJugador(), blackjackService.getCartasDealer());
+        int puntosJugador = blackjackService.calcularPuntuacion(blackjackService.getJugador().getCartas());
+        int puntosDealer = blackjackService.calcularPuntuacion(blackjackService.getCartasDealer());
+        byte resultado = blackjackService.resultado(puntosJugador, puntosDealer);
+
+        boolean juegoTerminado = blackjackService.verificarEstadoJuego(puntosJugador);
+
+        return new Juego(
+            blackjackService.getJugador(),
+            blackjackService.getCartasDealer(),
+            puntosDealer,
+            puntosJugador,
+            juegoTerminado,
+            resultado
+        );
     }
 
-    // Endpoint para pedir una carta para el jugador
+
+
     @PostMapping("/pedirCarta")
-    public void pedirCartaJugador() {
+    public Juego pedirCartaJugador() {
         blackjackService.pedirCartaJugador();
+        int puntosJugador = blackjackService.calcularPuntuacion(blackjackService.getJugador().getCartas());
+        boolean juegoTerminado  = blackjackService.verificarEstadoJuego(puntosJugador);
+
+        return getEstadoJuego();
+        
     }
 
-    // Endpoint para mostrar la carta oculta del dealer
-    @PostMapping("/mostrarCartaDealer")
-    public void mostrarCartaDealer() {
-        blackjackService.mostrarCartaDealer();
+
+    @PostMapping("/plantarse")
+    public Juego plantarse() {
+    	blackjackService.plantarse();
+        int puntosJugador = blackjackService.calcularPuntuacion(blackjackService.getJugador().getCartas());
+        int puntosDealer = blackjackService.calcularPuntuacion(blackjackService.getCartasDealer());
+        byte resultado = blackjackService.resultado(puntosJugador, puntosDealer);
+        
+        // Comprobamos el estado del juego
+        boolean juegoTerminado = true;
+        
+        return getEstadoJuego();
+
     }
 
-    // Endpoint para iniciar/reiniciar el juego
+
     @PostMapping("/iniciarJuego")
-    public void iniciarJuego() {
+    public Juego iniciarJuego() {
         blackjackService.iniciarJuego();
+        return new Juego(
+            blackjackService.getJugador(),
+            blackjackService.getCartasDealer(),
+            blackjackService.calcularPuntuacion(blackjackService.getCartasDealer()),
+            blackjackService.calcularPuntuacion(blackjackService.getJugador().getCartas()),
+            false,
+            (byte) 0
+        );
     }
 }

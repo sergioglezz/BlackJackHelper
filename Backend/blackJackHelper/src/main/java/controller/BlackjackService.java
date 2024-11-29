@@ -1,6 +1,7 @@
 package controller;
 
 import model.Carta;
+import model.Jugador;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 public class BlackjackService {
 
     private List<Carta> mazo;
-    private List<Carta> cartasJugador;
+    private Jugador jugador; // Usamos Jugador
     private List<Carta> cartasDealer;
 
     public BlackjackService() {
@@ -19,49 +20,16 @@ public class BlackjackService {
     }
 
     public void iniciarJuego() {
+        jugador = new Jugador(); // Inicializamos al jugador
+        inicializarMazo();
+        barajarMazo();
+        repartirCartasIniciales();
+    }
+
+    private void inicializarMazo() {
         mazo = crearMazo();
-        Collections.shuffle(mazo); // Barajamos las cartas
-
-        cartasJugador = new ArrayList<>();
-        cartasDealer = new ArrayList<>();
-
-        // Repartimos dos cartas al jugador
-        cartasJugador.add(mazo.remove(0));
-        cartasJugador.add(mazo.remove(0));
-
-        // Repartimos dos cartas al dealer
-        Carta primeraCartaDealer = mazo.remove(0);
-        Carta segundaCartaDealer = mazo.remove(0);
-
-        cartasDealer.add(primeraCartaDealer);
-        cartasDealer.add(new Carta(segundaCartaDealer.getPalo(), segundaCartaDealer.getValor(), false)); // Segunda carta oculta
     }
-
-    // Devuelve las cartas actuales del jugador
-    public List<Carta> getCartasJugador() {
-        return cartasJugador;
-    }
-
-    // Devuelve las cartas actuales del dealer
-    public List<Carta> getCartasDealer() {
-        return cartasDealer;
-    }
-
-    // Lógica para pedir una carta para el jugador
-    public void pedirCartaJugador() {
-        if (!mazo.isEmpty()) {
-            cartasJugador.add(mazo.remove(0));
-        }
-    }
-
-    // Muestra la carta oculta del dealer
-    public void mostrarCartaDealer() {
-        if (!cartasDealer.isEmpty()) {
-            cartasDealer.get(1).setVisible(true); // Cambia la carta oculta a visible
-        }
-    }
-
-    // Crea un mazo completo de 52 cartas
+    
     private List<Carta> crearMazo() {
         String[] palos = {"corazones", "diamantes", "treboles", "picas"};
         String[] valores = {"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"};
@@ -73,5 +41,108 @@ public class BlackjackService {
             }
         }
         return mazo;
+    }
+
+
+    private void barajarMazo() {
+        Collections.shuffle(mazo);
+    }
+
+    private void repartirCartasIniciales() {
+        cartasDealer = new ArrayList<>();
+
+        // Repartimos dos cartas al jugador
+        jugador.addCarta(mazo.remove(0));
+        jugador.addCarta(mazo.remove(0));
+
+        // Repartimos dos cartas al dealer (una oculta)
+        Carta primeraCartaDealer = mazo.remove(0);
+        Carta segundaCartaDealer = mazo.remove(0);
+
+        cartasDealer.add(primeraCartaDealer);
+        cartasDealer.add(new Carta(segundaCartaDealer.getPalo(), segundaCartaDealer.getValor(), false)); // Oculta
+    }
+
+    public Jugador getJugador() {
+        return jugador;
+    }
+
+    public List<Carta> getCartasDealer() {
+        return cartasDealer;
+    }
+
+    public void pedirCartaJugador() {
+        if (mazo.isEmpty()) {
+            throw new IllegalStateException("El mazo está vacío. No se pueden repartir más cartas.");
+        }
+        jugador.addCarta(mazo.remove(0));
+    }
+
+    public void pedirCartaDealer() {
+        while (calcularPuntuacion(cartasDealer) < 17) {
+            if (mazo.isEmpty()) {
+                throw new IllegalStateException("El mazo está vacío. No se pueden repartir más cartas.");
+            }
+            cartasDealer.add(mazo.remove(0));
+        }
+    }
+
+    public void plantarse() {
+        mostrarCartaDealer();
+        pedirCartaDealer();
+    }
+
+    public byte resultado(int puntosJugador, int puntosDealer) {
+        if (puntosJugador > puntosDealer || puntosDealer > 21) {
+            return 1; // Ganó el jugador
+        } else if (puntosJugador < puntosDealer) {
+            return 2; // Ganó el dealer
+        } else {
+            return 3; // Empate
+        }
+    }
+    
+    public boolean verificarEstadoJuego(int puntos) {
+        if (puntos > 21) {
+            return true; // El jugador se pasa de 21
+        }
+        return false; // El jugador puede seguir jugando
+    }
+
+    public void mostrarCartaDealer() {
+        if (!cartasDealer.isEmpty()) {
+            cartasDealer.get(1).setVisible(true); // Revela la carta oculta
+        }
+    }
+
+    public int calcularPuntuacion(List<Carta> mano) {
+        int suma = 0;
+        int ases = 0;
+
+        for (Carta carta : mano) {
+            String valor = carta.getValor();
+
+            switch (valor) {
+                case "T":
+                case "J":
+                case "Q":
+                case "K":
+                    suma += 10;
+                    break;
+                case "A":
+                    ases++;
+                    suma += 11; // Consideramos el As como 11 inicialmente
+                    break;
+                default:
+                    suma += Integer.parseInt(valor);
+            }
+        }
+
+        while (suma > 21 && ases > 0) {
+            suma -= 10;
+            ases--;
+        }
+
+        return suma;
     }
 }

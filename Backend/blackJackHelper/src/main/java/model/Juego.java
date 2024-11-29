@@ -3,40 +3,52 @@ package model;
 import java.util.List;
 
 public class Juego {
-    private List<Carta> cartasJugador;
+    private Jugador jugador; // Objeto Jugador
     private List<Carta> cartasDealer;
-    private boolean dealerVisible;
-    
-    
-	public Juego(List<Carta> cartasJugador, List<Carta> cartasDealer) {
-		super();
-		this.cartasJugador = cartasJugador;
-		this.cartasDealer = cartasDealer;
+    private int puntosDealer;
+    private int puntosJugador;
+    private boolean juegoTerminado;
+    private byte resultado;
+
+    public Juego(Jugador jugador, List<Carta> cartasDealer, int puntosDealer,int puntosJugador, boolean juegoTerminado, byte resultado) {
+        this.jugador = jugador;
+        this.cartasDealer = cartasDealer;
+        this.puntosDealer = puntosDealer;
+        this.setPuntosJugador(puntosJugador);
+        this.juegoTerminado = juegoTerminado;
+        this.resultado = resultado;
+    }
+
+    public Jugador getJugador() {
+        return jugador;
+    }
+
+    public List<Carta> getCartasDealer() {
+        return cartasDealer;
+    }
+
+    public int getPuntosDealer() {
+        return puntosDealer;
+    }
+
+    public boolean isJuegoTerminado() {
+        return juegoTerminado;
+    }
+
+    public byte getResultado() {
+        return resultado;
+    }
+
+    public void setResultado(byte resultado) {
+        this.resultado = resultado;
+    }
+
+	public int getPuntosJugador() {
+		return puntosJugador;
 	}
 
-	public List<Carta> getCartasJugador() {
-		return cartasJugador;
+	public void setPuntosJugador(int puntosJugador) {
+		this.puntosJugador = puntosJugador;
 	}
-	
-	public void setCartasJugador(List<Carta> cartasJugador) {
-		this.cartasJugador = cartasJugador;
-	}
-	
-	public List<Carta> getCartasDealer() {
-		return cartasDealer;
-	}
-	
-	public void setCartasDealer(List<Carta> cartasDealer) {
-		this.cartasDealer = cartasDealer;
-	}
-	
-	public boolean isDealerVisible() {
-		return dealerVisible;
-	}
-	
-	public void setDealerVisible(boolean dealerVisible) {
-		this.dealerVisible = dealerVisible;
-	}
-
-    
 }
+
