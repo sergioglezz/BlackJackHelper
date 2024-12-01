@@ -65,7 +65,7 @@ git clone https://github.com/tu_usuario/tu_repositorio.git
 #### **3. Configurar y ejecutar el frontend**
 1. Navega al directorio del frontend:
    ```bash
-   cd frontend
+   cd frontend/blackjack-frontend
    ```
 2. Instala las dependencias del proyecto:
    ```bash

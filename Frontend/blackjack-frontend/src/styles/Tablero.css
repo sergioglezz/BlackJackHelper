@@ -37,7 +37,7 @@ h1 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 25px;
+    gap: 50px;
 }
 
 .puntos-jugador{
@@ -74,28 +74,43 @@ h3 {
     font-size: 10rem;
     margin-top: 15vh;
     align-content: center;
+    z-index: 1;
 }
 
 .apuestas{
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     bottom: 0; 
     background-color: #00a7548e;
     width: 20vw;
     height: 100vh;
     align-content: center;
-    padding: 1vh;
+    padding: 2vh;
 }
 
 .botones_apuestas {
-    background-color: #147621;
-    border-color: #ffffff;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
     color: white;
-    border: solid #0d5817 1vh;
     border-radius: 10vh;
     width: 12vh;
     height: 12vh;
-    cursor: pointer;
     font-size: 1.5rem;
+    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
+   
 }
+
+.botones_apuestas img {
+    width: 12vh;
+    height: auto; 
+    z-index: 1;
+}
+
+.botones_apuestas:hover img {
+    opacity: 0.5; /* Efecto de transparencia al pasar el ratón */
+}
+  

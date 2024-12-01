@@ -1,9 +1,12 @@
 package controller;
 
 import model.Juego;
+import model.Jugador;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,44 +37,45 @@ public class BlackjackController {
         );
     }
 
-
-
     @PostMapping("/pedirCarta")
     public Juego pedirCartaJugador() {
+        if (!blackjackService.getJugador().isApuestaRealizada()) {
+            throw new IllegalStateException("Debes realizar una apuesta antes de pedir una carta.");
+        }
         blackjackService.pedirCartaJugador();
-        int puntosJugador = blackjackService.calcularPuntuacion(blackjackService.getJugador().getCartas());
-        boolean juegoTerminado  = blackjackService.verificarEstadoJuego(puntosJugador);
-
         return getEstadoJuego();
-        
     }
-
 
     @PostMapping("/plantarse")
     public Juego plantarse() {
-    	blackjackService.plantarse();
-        int puntosJugador = blackjackService.calcularPuntuacion(blackjackService.getJugador().getCartas());
-        int puntosDealer = blackjackService.calcularPuntuacion(blackjackService.getCartasDealer());
-        byte resultado = blackjackService.resultado(puntosJugador, puntosDealer);
-        
-        // Comprobamos el estado del juego
-        boolean juegoTerminado = true;
-        
+        if (!blackjackService.getJugador().isApuestaRealizada()) {
+            throw new IllegalStateException("Debes realizar una apuesta antes de plantarte.");
+        }
+        blackjackService.plantarse();
         return getEstadoJuego();
-
     }
 
+    @PostMapping("/apostar")
+    public Juego apostar(@RequestParam int cantidad) {
+        Jugador jugador = blackjackService.getJugador();
+
+        if (jugador.getDinero() >= cantidad) {
+            jugador.setDinero(jugador.getDinero() - cantidad);
+            jugador.setApuesta(cantidad);
+            return getEstadoJuego();
+        } else {
+            throw new IllegalArgumentException("No tienes suficiente dinero para esta apuesta.");
+        }
+    }
 
     @PostMapping("/iniciarJuego")
     public Juego iniciarJuego() {
-        blackjackService.iniciarJuego();
-        return new Juego(
-            blackjackService.getJugador(),
-            blackjackService.getCartasDealer(),
-            blackjackService.calcularPuntuacion(blackjackService.getCartasDealer()),
-            blackjackService.calcularPuntuacion(blackjackService.getJugador().getCartas()),
-            false,
-            (byte) 0
-        );
+        try {
+            blackjackService.iniciarJuego();
+            return getEstadoJuego();
+        } catch (IllegalStateException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 }
+

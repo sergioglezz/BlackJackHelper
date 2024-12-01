@@ -20,11 +20,20 @@ public class BlackjackService {
     }
 
     public void iniciarJuego() {
-        jugador = new Jugador(); // Inicializamos al jugador
+        if (!jugador.isApuestaRealizada()) {
+            throw new IllegalStateException("Debes realizar una apuesta antes de iniciar el juego.");
+        }
+        jugador.getCartas().clear(); // Limpiamos las cartas por si es un nuevo juego
         inicializarMazo();
         barajarMazo();
         repartirCartasIniciales();
     }
+
+    public void reiniciarJuego() {
+        jugador.resetApuesta(); // Reinicia la apuesta y su estado
+        iniciarJuego(); // Reparte nuevas cartas
+    }
+
 
     private void inicializarMazo() {
         mazo = crearMazo();
@@ -94,10 +103,12 @@ public class BlackjackService {
 
     public byte resultado(int puntosJugador, int puntosDealer) {
         if (puntosJugador > puntosDealer || puntosDealer > 21) {
+            jugador.setDinero(jugador.getDinero() + jugador.getApuesta() * 2);
             return 1; // Ganó el jugador
         } else if (puntosJugador < puntosDealer) {
             return 2; // Ganó el dealer
         } else {
+            jugador.setDinero(jugador.getDinero() + jugador.getApuesta());
             return 3; // Empate
         }
     }
