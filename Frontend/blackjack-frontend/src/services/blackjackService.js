@@ -24,12 +24,18 @@ export const iniciarJuego = async () => {
   return await response.json();
 };
 
-export const apostar = async (monto) => {
+export const apostar = async (cantidad) => {
   const response = await fetch(`${API_URL}/apostar`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ monto }),
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ cantidad }),
   });
-  if (!response.ok) throw new Error("Error al realizar la apuesta");
+
+  if (!response.ok) {
+    throw new Error(`Error al realizar la apuesta: ${response.status}`);
+  }
+
   return await response.json();
 };

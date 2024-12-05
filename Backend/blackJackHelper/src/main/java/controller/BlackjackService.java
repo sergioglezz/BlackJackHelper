@@ -12,28 +12,28 @@ import java.util.List;
 public class BlackjackService {
 
     private List<Carta> mazo;
-    private Jugador jugador; // Usamos Jugador
+    private Jugador jugador;
     private List<Carta> cartasDealer;
 
     public BlackjackService() {
-        iniciarJuego();
+        this.jugador = new Jugador(); // Inicializa el jugador vacío
+        this.cartasDealer = new ArrayList<>(); // Inicializa la lista de cartas del dealer
+        inicializarMazo(); // Prepara el mazo
     }
 
     public void iniciarJuego() {
         if (!jugador.isApuestaRealizada()) {
             throw new IllegalStateException("Debes realizar una apuesta antes de iniciar el juego.");
         }
-        jugador.getCartas().clear(); // Limpiamos las cartas por si es un nuevo juego
-        inicializarMazo();
+        jugador.getCartas().clear(); // Limpia las cartas del jugador
         barajarMazo();
         repartirCartasIniciales();
     }
 
     public void reiniciarJuego() {
-        jugador.resetApuesta(); // Reinicia la apuesta y su estado
-        iniciarJuego(); // Reparte nuevas cartas
+        jugador.resetApuesta(); // Reinicia la apuesta
+        iniciarJuego(); // Comienza de nuevo
     }
-
 
     private void inicializarMazo() {
         mazo = crearMazo();
@@ -99,19 +99,27 @@ public class BlackjackService {
     public void plantarse() {
         mostrarCartaDealer();
         pedirCartaDealer();
+        premioApuesta(resultado(calcularPuntuacion(getJugador().getCartas()), calcularPuntuacion(getCartasDealer())));
     }
 
     public byte resultado(int puntosJugador, int puntosDealer) {
         if (puntosJugador > puntosDealer || puntosDealer > 21) {
-            jugador.setDinero(jugador.getDinero() + jugador.getApuesta() * 2);
             return 1; // Ganó el jugador
         } else if (puntosJugador < puntosDealer) {
             return 2; // Ganó el dealer
         } else {
-            jugador.setDinero(jugador.getDinero() + jugador.getApuesta());
             return 3; // Empate
         }
     }
+    
+    public void premioApuesta(int resultado) {
+    	if (resultado == 1) {
+            jugador.setDinero(jugador.getDinero() + jugador.getApuesta() * 2);
+    	    } else if (resultado == 3) {
+            jugador.setDinero(jugador.getDinero() + jugador.getApuesta());
+    	    }
+    };
+    
     
     public boolean verificarEstadoJuego(int puntos) {
         if (puntos > 21) {

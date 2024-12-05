@@ -3,10 +3,12 @@ package controller;
 import model.Juego;
 import model.Jugador;
 
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -56,7 +58,8 @@ public class BlackjackController {
     }
 
     @PostMapping("/apostar")
-    public Juego apostar(@RequestParam int cantidad) {
+    public Juego apostar(@RequestBody Map<String, Integer> body) {
+        int cantidad = body.get("cantidad");
         Jugador jugador = blackjackService.getJugador();
 
         if (jugador.getDinero() >= cantidad) {
@@ -67,6 +70,7 @@ public class BlackjackController {
             throw new IllegalArgumentException("No tienes suficiente dinero para esta apuesta.");
         }
     }
+
 
     @PostMapping("/iniciarJuego")
     public Juego iniciarJuego() {
