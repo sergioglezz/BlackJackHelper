@@ -1,52 +1,37 @@
 package model;
 
 public class Carta {
-    private String palo;
-    private String valor;
-    private boolean visible;
-    private String rutaImagen;
+    private String valor; // Ejemplo: "A", "2", "3", ..., "K"
+    private String palo;  // "corazones", "picas", "tréboles", "diamantes"
+    private boolean visible; // Si la carta es visible o está oculta
 
-
-    public Carta(String palo, String valor, boolean visible) {
-        this.palo = palo;
+    // Constructor
+    public Carta(String valor, String palo, boolean visible) {
         this.valor = valor;
+        this.palo = palo;
         this.visible = visible;
-        this.rutaImagen = "/images/cartas/" + valor.toLowerCase() + "_" + palo.toLowerCase() + ".png";
     }
 
-    public Carta(Carta carta) {
-        this.palo = carta.getPalo();
-        this.valor = carta.getValor();
-        this.visible = carta.isVisible();
-	}
-
-	public String getPalo() {
-        return palo;
+    // Getters y Setters
+    public int getValorNumerico() {
+        if (valor.equals("A")) return 11;
+        if (valor.equals("K") || valor.equals("Q") || valor.equals("J") || valor.equals("T")) return 10;
+        return Integer.parseInt(valor);
     }
 
     public String getValor() {
         return valor;
     }
 
+    public String getPalo() {
+        return palo;
+    }
+
     public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-	
-    public String getImageName() {
-        return valor + "_" + palo + ".png";
-    }
-	
-    public String getRutaImagen() {
-        return visible ? rutaImagen : "/images/cartas/carta_oculta.png";
+        return visible;
     }
 
-	@Override
-    public String toString() {
-        return valor + " de " + palo;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
-	
 }

@@ -3,25 +3,43 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Jugador {
-    private List<Carta> cartas;
     private int dinero;
-    private int apuesta;
-    private boolean apuestaRealizada;
+    private List<Mano> manos;
+    private List<Integer> apuestas;
 
-    public Jugador() {
-        this.cartas = new ArrayList<>();
-        this.dinero = 5000; // Dinero inicial
-        this.apuesta = 0;
-        this.apuestaRealizada = false;
+    public Jugador(Integer dineroInicial) {
+        this.dinero = dineroInicial;
+        this.manos = new ArrayList<>();
+        this.apuestas = new ArrayList<>();
+        manos.add(new Mano()); // Una mano inicial
+        apuestas.add(0);     // Apuesta inicial por defecto
     }
 
-    public void addCarta(Carta carta) {
-        this.cartas.add(carta);
+    public void registrarApuesta(int apuesta) {
+        if (dinero < apuesta) {
+            throw new IllegalArgumentException("Fondos insuficientes para esta apuesta.");
+        }
+        apuestas.add(apuesta);
+        dinero -= apuesta;
+    }
+    
+    public void separar(int indiceMano, int apuesta) {
+        Mano mano = manos.get(indiceMano);
+        if (mano.getCartas().size() == 2 && mano.getCartas().get(0).getValor().equals(mano.getCartas().get(1).getValor())) {
+            Carta cartaSeparada = mano.getCartas().remove(1);
+            Mano nuevaMano = new Mano();
+            nuevaMano.agregarCarta(cartaSeparada);
+            manos.add(nuevaMano);
+            this.registrarApuesta(apuesta);
+        }
     }
 
-    public List<Carta> getCartas() {
-        return cartas;
+    public List<Mano> getManos() {
+        return manos;
     }
 
     public int getDinero() {
@@ -32,21 +50,13 @@ public class Jugador {
         this.dinero = dinero;
     }
 
-    public int getApuesta() {
-        return apuesta;
+    public List<Integer> getApuestas() {
+        return apuestas;
     }
-
-    public void setApuesta(int apuesta) {
-        this.apuesta = apuesta;
-        this.apuestaRealizada = true; // Se marca como realizada al establecer una apuesta
+    
+    public void limpiarApuestas(){
+    	this.apuestas.clear();
     }
-
-    public boolean isApuestaRealizada() {
-        return apuestaRealizada;
-    }
-
-    public void resetApuesta() {
-        this.apuesta = 0;
-        this.apuestaRealizada = false; // Se reinicia cuando termina el juego
-    }
+    
 }
+

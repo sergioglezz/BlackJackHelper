@@ -1,41 +1,60 @@
-const API_URL = "http://localhost:8080/blackjack"; // Asegúrate de que sea tu URL correcta
+import axios from 'axios';
 
-export const obtenerEstadoJuego = async () => {
-  const response = await fetch(`${API_URL}/estado`);
-  if (!response.ok) throw new Error("Error al obtener el estado del juego");
-  return await response.json();
+const API_URL = 'http://localhost:8080/blackjack'; // Cambia esta URL según tu configuración
+
+export const nuevaPartida = async (apuestaInicial) => {
+  try {
+    await axios.post(`${API_URL}/nuevaPartida`, null, { params: { apuestaInicial } });
+  } catch (error) {
+    console.error('Error al iniciar nueva partida:', error);
+  }
 };
 
 export const pedirCarta = async () => {
-  const response = await fetch(`${API_URL}/pedirCarta`, { method: "POST" });
-  if (!response.ok) throw new Error("Error al pedir carta");
-  return await response.json();
+  try {
+    await axios.post(`${API_URL}/pedirCarta`);
+  } catch (error) {
+    console.error('Error al pedir carta:', error);
+  }
 };
 
 export const plantarse = async () => {
-  const response = await fetch(`${API_URL}/plantarse`, { method: "POST" });
-  if (!response.ok) throw new Error("Error al plantarse");
-  return await response.json();
-};
-
-export const iniciarJuego = async () => {
-  const response = await fetch(`${API_URL}/iniciarJuego`, { method: "POST" });
-  if (!response.ok) throw new Error("Error al iniciar juego");
-  return await response.json();
-};
-
-export const apostar = async (cantidad) => {
-  const response = await fetch(`${API_URL}/apostar`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ cantidad }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error al realizar la apuesta: ${response.status}`);
+  try {
+    await axios.post(`${API_URL}/plantarse`);
+  } catch (error) {
+    console.error('Error al plantarse:', error);
   }
+};
 
-  return await response.json();
+export const separar = async () => {
+  try {
+    await axios.post(`${API_URL}/separar`);
+  } catch (error) {
+    console.error('Error al separar cartas:', error);
+  }
+};
+
+export const resolverRonda = async () => {
+  try {
+    await axios.post(`${API_URL}/resolverRonda`);
+  } catch (error) {
+    console.error('Error al resolver la ronda:', error);
+  }
+};
+
+export const reiniciarJuego = async () => {
+  try {
+    await axios.post(`${API_URL}/reiniciarJuego`);
+  } catch (error) {
+    console.error('Error al reiniciar el juego:', error);
+  }
+};
+
+export const obtenerEstadoJuego = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/estadoJuego`);
+    return response.data; // Devuelve el estado del juego al frontend
+  } catch (error) {
+    console.error('Error al obtener el estado del juego:', error);
+  }
 };

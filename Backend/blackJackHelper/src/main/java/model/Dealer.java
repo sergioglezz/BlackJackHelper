@@ -4,29 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Dealer {
+    private Mano mano;
 
+    public Dealer() {
+        this.mano = new Mano();
+    }
 
-    private List<Carta> cartas;
-    
+    public void jugar(Mazo mazo) {
+        while (mano.calcularPuntos() < 17) {
+            mano.agregarCarta(mazo.sacarCarta());
+        }
+    }
 
-	public Dealer() {
-		super();
-        this.cartas = new ArrayList<>();
-	}
-
-
-	public List<Carta> getCartas() {
-		return cartas;
-	}
-
-	public void addCarta(Carta carta) {
-		this.cartas.add(carta);
-	}
-	
-	
-	@Override
-	public String toString() {
-		return "Dealer [cartas=" + cartas + "]";
-	}
-
+    public Mano getMano() {
+        return mano;
+    }
 }

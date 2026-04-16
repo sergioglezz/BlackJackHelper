@@ -1,85 +1,63 @@
 package controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import model.Juego;
-import model.Jugador;
-
-import java.util.Map;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/blackjack")
 public class BlackjackController {
 
-    private final BlackjackService blackjackService;
+    @Autowired
+    private BlackjackService blackjackService;
 
-    public BlackjackController(BlackjackService blackjackService) {
-        this.blackjackService = blackjackService;
+    // Endpoint para iniciar una nueva partida
+    @PostMapping("/nuevaPartida")
+    public void nuevaPartida(@RequestParam int apuestaInicial) {
+        blackjackService.nuevaPartida(apuestaInicial);
     }
 
-    @GetMapping("/estado")
-    public Juego getEstadoJuego() {
-        int puntosJugador = blackjackService.calcularPuntuacion(blackjackService.getJugador().getCartas());
-        int puntosDealer = blackjackService.calcularPuntuacion(blackjackService.getCartasDealer());
-        byte resultado = blackjackService.resultado(puntosJugador, puntosDealer);
-
-        boolean juegoTerminado = blackjackService.verificarEstadoJuego(puntosJugador);
-
-        return new Juego(
-            blackjackService.getJugador(),
-            blackjackService.getCartasDealer(),
-            puntosDealer,
-            puntosJugador,
-            juegoTerminado,
-            resultado
-        );
-    }
-
+    // Endpoint para que el jugador pida carta
     @PostMapping("/pedirCarta")
-    public Juego pedirCartaJugador() {
-        if (!blackjackService.getJugador().isApuestaRealizada()) {
-            throw new IllegalStateException("Debes realizar una apuesta antes de pedir una carta.");
-        }
-        blackjackService.pedirCartaJugador();
-        return getEstadoJuego();
+    public void pedirCarta() {
+        blackjackService.pedirCarta();
     }
 
+    // Endpoint para que el jugador se plante
     @PostMapping("/plantarse")
-    public Juego plantarse() {
-        if (!blackjackService.getJugador().isApuestaRealizada()) {
-            throw new IllegalStateException("Debes realizar una apuesta antes de plantarte.");
-        }
+    public void plantarse() {
         blackjackService.plantarse();
-        return getEstadoJuego();
     }
 
-    @PostMapping("/apostar")
-    public Juego apostar(@RequestBody Map<String, Integer> body) {
-        int cantidad = body.get("cantidad");
-        Jugador jugador = blackjackService.getJugador();
-
-        if (jugador.getDinero() >= cantidad) {
-            jugador.setDinero(jugador.getDinero() - cantidad);
-            jugador.setApuesta(cantidad);
-            return getEstadoJuego();
-        } else {
-            throw new IllegalArgumentException("No tienes suficiente dinero para esta apuesta.");
-        }
+    // Endpoint para que el jugador separe cartas
+    @PostMapping("/separar")
+    public void separar() {
+        blackjackService.separar();
     }
 
+    /*
+    // Endpoint para que el dealer juegue su turno
+    @PostMapping("/jugarDealer")
+    public void jugarDealer() {
+        blackjackService.jugarDealer();
+    }
+    */
 
-    @PostMapping("/iniciarJuego")
-    public Juego iniciarJuego() {
-        try {
-            blackjackService.iniciarJuego();
-            return getEstadoJuego();
-        } catch (IllegalStateException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+    // Endpoint para resolver la ronda
+    @PostMapping("/resolverRonda")
+    public void resolverRonda() {
+        blackjackService.resolverRonda();
+    }
+
+    // Endpoint para reiniciar el juego (manteniendo el dinero del jugador)
+    @PostMapping("/reiniciarJuego")
+    public void reiniciarJuego() {
+        blackjackService.reiniciarJuego();
+    }
+
+    // Endpoint para obtener el estado del juego (jugador, dealer, etc.)
+    @GetMapping("/estadoJuego")
+    public Juego obtenerEstadoJuego() {
+        return blackjackService.getJuego();
     }
 }
-

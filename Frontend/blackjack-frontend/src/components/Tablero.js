@@ -1,82 +1,81 @@
 import React, { useState, useEffect } from "react";
-import { obtenerEstadoJuego, pedirCarta, plantarse, iniciarJuego, apostar } from "../services/blackjackService";
+import { nuevaPartida, pedirCarta, plantarse, separar, resolverRonda, reiniciarJuego, obtenerEstadoJuego } from "../services/blackjackService.js";
 import "../styles/Tablero.css";
 
 const Tablero = () => {
   const [juego, setJuego] = useState(null);
   const [mensaje, setMensaje] = useState("");
-  const [juegoTerminado, setJuegoTerminado] = useState(true); // Juego no iniciado
+  const [juegoTerminado, setJuegoTerminado] = useState(true); // Indica si el juego está terminado o no
   const [apuesta, setApuesta] = useState(0);
 
-
   const cargarEstadoJuego = async () => {
-      const estado = await obtenerEstadoJuego();
-      setJuego(estado);
-      setMensaje("");
-      setJuegoTerminado(true); // Se requiere apuesta para iniciar
-    };
-    
-  useEffect(() => {
-    if (mensaje) {
-      const timer = setTimeout(() => {
+    const estado = await obtenerEstadoJuego();
+    setJuego(estado);
+    setMensaje("");
+  };
+
+  const manejarNuevaPartida = async () => {
+    if (apuesta > 0) {
+      try {
+        await nuevaPartida(apuesta);
+        const estado = await obtenerEstadoJuego();
+        setJuego(estado);
+        setJuegoTerminado(false);
         setMensaje("");
-        // Vaciar cartas y detener el juego
-        setJuego((prevJuego) => ({
-          ...prevJuego,
-          cartasDealer: [],
-          jugador: { ...prevJuego.jugador, cartas: [] },
-        }));
-        setApuesta(0);
-        setJuegoTerminado(true); // Marcar el juego como terminado
-      }, 3000); // 3 segundos para que desaparezca el mensaje
-  
-      return () => clearTimeout(timer);
+      } catch (error) {
+        setMensaje("Error al iniciar la partida");
+      }
+    } else {
+      setMensaje("Debes realizar una apuesta para comenzar");
     }
-  }, [mensaje]);
-  
-  
-  
-  
+  };
 
   const manejarPedirCarta = async () => {
-    const nuevoEstado = await pedirCarta();
-    setJuego(nuevoEstado);
-
-    if (nuevoEstado.juegoTerminado) {
+    await pedirCarta();
+    const estado = await obtenerEstadoJuego();
+    setJuego(estado);
+    if (estado.juegoTerminado) {
       setMensaje("Te has pasado");
       setJuegoTerminado(true);
     }
   };
 
   const manejarPlantarse = async () => {
-    const nuevoEstado = await plantarse();
-    setJuego(nuevoEstado);
+    await plantarse();
+    const estado = await obtenerEstadoJuego();
+    setJuego(estado);
+    setJuegoTerminado(true);
 
-    if (nuevoEstado.resultado === 1) {
+    if (estado.resultado === 1) {
       setMensaje("Has ganado");
-    } else if (nuevoEstado.resultado === 2) {
+    } else if (estado.resultado === 2) {
       setMensaje("Has perdido");
     } else {
       setMensaje("Empate");
     }
+  };
+
+  const manejarSeparar = async () => {
+    await separar();
+    const estado = await obtenerEstadoJuego();
+    setJuego(estado);
+  };
+
+  const manejarResolverRonda = async () => {
+    await resolverRonda();
+    const estado = await obtenerEstadoJuego();
+    setJuego(estado);
     setJuegoTerminado(true);
   };
 
-  const manejarApuesta = async () => {
-    if (apuesta > 0) {
-      try {
-        await apostar(apuesta);
-        const juegoIniciado = await iniciarJuego();
-        setJuego(juegoIniciado);
-        setJuegoTerminado(false); // Activar el juego
-      } catch (error) {
-        setMensaje("Error al realizar la apuesta");
-      }
-    } else {
-      setMensaje("Debes seleccionar una cantidad para apostar");
-    }
+  const manejarReiniciarJuego = async () => {
+    await reiniciarJuego();
+    const estado = await obtenerEstadoJuego();
+    setJuego(estado);
+    setMensaje("");
+    setApuesta(0);
+    setJuegoTerminado(true);
   };
-  
 
   const añadirApuesta = (cantidad) => {
     if (juegoTerminado) setApuesta(apuesta + cantidad);
@@ -113,29 +112,7 @@ const Tablero = () => {
     <div>
       <h1>Blackjack</h1>
       {mensaje && <div className="mensaje">{mensaje}</div>}
-      <div className="apuestas">
-        <h1>Dinero</h1>
-        <h2>{juego.jugador.dinero}</h2>
-        <h1>Apuesta</h1>
-        <h2>{apuesta}</h2>
-        <div className="botones">
-          {[100, 500, 1000, 5000, 10000, 25000].map((cantidad) => (
-            <button
-              key={cantidad}
-              className="botones_apuestas"
-              onClick={() => añadirApuesta(cantidad)}
-              disabled={!juegoTerminado}
-            >
-              <img src="/assets/ficha.png" alt="ficha" />
-              {cantidad}
-            </button>
-          ))}
-        </div>
-        <div className="botones">
-          <button onClick={borrarApuesta} disabled={!juegoTerminado}>Borrar</button>
-          <button onClick={manejarApuesta} disabled={!juegoTerminado || apuesta === 0}>Apostar</button>
-        </div>
-      </div>
+      
       <div className="tablero">
         <div>
           <h2>Dealer</h2>
@@ -176,6 +153,8 @@ const Tablero = () => {
         <div className="botones_acciones">
           <button onClick={manejarPedirCarta} disabled={juegoTerminado}>Pedir Carta</button>
           <button onClick={manejarPlantarse} disabled={juegoTerminado}>Plantarse</button>
+          <button onClick={manejarSeparar} disabled={juegoTerminado}>Separar</button>
+          <button onClick={manejarResolverRonda} disabled={!juegoTerminado}>Resolver Ronda</button>
         </div>
       </div>
     </div>
